@@ -39,7 +39,7 @@ extern void susfs_sus_ino_for_show_map_vma(unsigned long ino, dev_t *out_dev, un
 void task_mem(struct seq_file *m, struct mm_struct *mm)
 
 {
-	unsigned long text, lib, swap, ptes, pmds, anon, file, shmem;
+	unsigned long text, lib, swap, ptes, pmds, puds, anon, file, shmem;
 	unsigned long hiwater_vm, total_vm, hiwater_rss, total_rss;
 
 	anon = get_mm_counter(mm, MM_ANONPAGES);
