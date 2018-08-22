@@ -72,6 +72,11 @@ static void *reserve_vma_m_next(struct seq_file *m, void *v, loff_t *pos)
 	return next;
 }
 
+static int show_pid_map(struct seq_file *m, void *v)
+{
+	return show_map(m, v);
+}
+
 static const struct seq_operations proc_pid_rmaps_op = {
 	.start	= reserve_vma_m_start,
 	.next	= reserve_vma_m_next,
