@@ -145,6 +145,8 @@ static int pas_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	int err = -ENODEV;
 
 	cpu = of_get_cpu_node(policy->cpu, NULL);
+
+	of_node_put(cpu);
 	if (!cpu)
 		goto out;
 
