@@ -461,6 +461,8 @@ int cpufreq_dbs_governor_init(struct cpufreq_policy *policy)
 
 	kobject_put(&dbs_data->attr_set.kobj);
 
+	kobject_put(&dbs_data->attr_set.kobj);
+
 	policy->governor_data = NULL;
 
 	if (!have_governor_per_policy())
