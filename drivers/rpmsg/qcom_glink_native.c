@@ -2053,10 +2053,8 @@ struct qcom_glink *qcom_glink_native_probe(struct device *dev,
 	if (vm_support)
 		irqflags = IRQF_TRIGGER_RISING;
 	else
-		irqflags = IRQF_NO_SUSPEND | IRQF_SHARED;
-		
-#ifndef OPLUS_FEATURE_MODEM_DATA_NWPOWER
-//Ruansong@PSW.NW.DATA.2120730, 2019/07/11 add for RM_TAG_POWER_DEBUG
+		irqflags = IRQF_SHARED;
+
 	ret = devm_request_irq(dev, irq,
 			       qcom_glink_native_intr,
 			       irqflags,
@@ -2080,6 +2078,9 @@ struct qcom_glink *qcom_glink_native_probe(struct device *dev,
 	}
 
 	glink->irq = irq;
+	ret = enable_irq_wake(glink->irq);
+	if (ret)
+		dev_err(dev, "failed to set irq wake\n");
 
 	ret = enable_irq_wake(irq);
 	if (ret < 0)
