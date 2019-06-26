@@ -32,23 +32,7 @@ static inline void signal_event(struct kgsl_device *device,
 {
 	list_del(&event->node);
 	event->result = result;
-	if (event->prio == KGSL_EVENT_LOW_PRIORITY)
-		kthread_queue_work(&kgsl_driver.low_prio_worker, &event->work);
-	else
-		kthread_queue_work(&kgsl_driver.worker, &event->work);
-}
-
-static const char *priorities[KGSL_EVENT_NUM_PRIORITIES] = {
-	"KGSL_EVENT_REGULAR_PRIORITY",
-	"KGSL_EVENT_LOW_PRIORITY"
-};
-
-const char *prio_to_string(enum kgsl_priority prio)
-{
-	if (prio < KGSL_EVENT_NUM_PRIORITIES)
-		return priorities[prio];
-	else
-		return "<invalid priority>";
+	queue_work(device->events_wq, &event->work);
 }
 
 /**
@@ -298,10 +282,6 @@ static int kgsl_add_event_common(struct kgsl_device *device,
 	event->prio = prio;
 
 	INIT_WORK(&event->work, _kgsl_event_worker);
-#ifdef OPLUS_FEATURE_UIFIRST
-// caichen@TECH.Kernel.Sched, 2020/05/28, add for uifirst wq
-	set_uxwork(&event->work);
-#endif
 
 	trace_kgsl_register_event(
 		KGSL_CONTEXT_ID(context), timestamp, func, prio);
@@ -317,11 +297,8 @@ static int kgsl_add_event_common(struct kgsl_device *device,
 
 	if (timestamp_cmp(retired, timestamp) >= 0) {
 		event->result = KGSL_EVENT_RETIRED;
-		if (prio == KGSL_EVENT_LOW_PRIORITY)
-			kthread_queue_work(
-				&kgsl_driver.low_prio_worker, &event->work);
-		else
-			kthread_queue_work(&kgsl_driver.worker, &event->work);
+
+		queue_work(device->events_wq, &event->work);
 		spin_unlock(&group->lock);
 		return 0;
 	}
