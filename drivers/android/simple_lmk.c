@@ -10,6 +10,7 @@
 #include <linux/moduleparam.h>
 #include <linux/oom.h>
 #include <linux/sort.h>
+#include <linux/vmpressure.h>
 #include <linux/version.h>
 
 /* The sched_param struct is located elsewhere in newer kernels */
@@ -291,11 +292,32 @@ void simple_lmk_mm_freed(struct mm_struct *mm)
 	}
 }
 
+static int simple_lmk_vmpressure_cb(struct notifier_block *nb,
+				    unsigned long pressure, void *data)
+{
+	if (pressure == 100 && !atomic_cmpxchg_acquire(&needs_reclaim, 0, 1))
+		wake_up(&oom_waitq);
+
+	return NOTIFY_OK;
+}
+
+static struct notifier_block vmpressure_notif = {
+	.notifier_call = simple_lmk_vmpressure_cb,
+	.priority = INT_MAX
+};
+
 /* Initialize Simple LMK when lmkd in Android writes to the minfree parameter */
 static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
 {
 	static bool init_done;
 	struct task_struct *thread;
+
+	if (!atomic_cmpxchg(&init_done, 0, 1)) {
+		thread = kthread_run(simple_lmk_reclaim_thread, NULL,
+				     "simple_lmkd");
+		BUG_ON(IS_ERR(thread));
+		BUG_ON(vmpressure_notifier_register(&vmpressure_notif));
+	}
 
 	if (cmpxchg(&init_done, false, true))
 		return 0;
