@@ -105,7 +105,6 @@ struct kgsl_drawobj_sync {
 	unsigned long timeout_jiffies;
 };
 
-
 /**
  * struct kgsl_drawobj_sync_event
  * @id: identifer (positiion within the pending bitmap)
