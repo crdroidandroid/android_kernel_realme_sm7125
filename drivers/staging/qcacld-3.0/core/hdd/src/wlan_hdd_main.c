@@ -8713,7 +8713,6 @@ out:
 	return ret;
 }
 
-
 /**
  * hdd_context_deinit() - Deinitialize HDD context
  * @hdd_ctx:    HDD context.

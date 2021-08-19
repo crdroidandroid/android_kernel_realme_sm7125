@@ -1101,7 +1101,6 @@
 	CFG_INI_BOOL("enable_multicast_replay_filter", \
 	true, "Enable filtering of replayed multicast packets")
 
-
 /*
  * <ini>
  * num_dp_rx_threads - Control to set the number of dp rx threads
