@@ -320,7 +320,6 @@ static struct ctl_table sysctl_base_table[] = {
 	{ }
 };
 
-#ifdef CONFIG_SCHED_DEBUG
 static int min_sched_granularity_ns = 100000;		/* 100 usecs */
 static int max_sched_granularity_ns = NSEC_PER_SEC;	/* 1 second */
 static int min_wakeup_granularity_ns;			/* 0 usecs */
@@ -329,7 +328,6 @@ static int max_wakeup_granularity_ns = NSEC_PER_SEC;	/* 1 second */
 static int min_sched_tunable_scaling = SCHED_TUNABLESCALING_NONE;
 static int max_sched_tunable_scaling = SCHED_TUNABLESCALING_END-1;
 #endif /* CONFIG_SMP */
-#endif /* CONFIG_SCHED_DEBUG */
 
 #ifdef OPLUS_FEATURE_UIFIRST
 // XieLiujie@BSP.KERNEL.PERFORMANCE, 2020/05/25, Add for UIFirst
@@ -499,56 +497,6 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= sched_updown_migrate_handler,
 	},
-#if defined(OPLUS_FEATURE_FG_IO_OPT) && defined(CONFIG_OPPO_FG_IO_OPT)
-/*Huacai.Zhou@Tech.Kernel.MM, 2020-03-23,add foreground io opt*/
-	{
-		.procname	= "fg_io_opt",
-		.data		= &sysctl_fg_io_opt,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
-	},
-#endif /*OPLUS_FEATURE_FG_IO_OPT*/
-#ifdef OPLUS_FEATURE_EDTASK_IMPROVE
-/* Chuck.Huang@Power.basic, 2020-09-03, Add for improving ed task migration */
-	{
-		.procname   = "ed_task_enabled",
-		.data       = &sysctl_ed_task_enabled,
-		.maxlen     = sizeof(int),
-		.mode       = 0666,
-		.proc_handler = proc_dointvec,
-	},
-#endif
-#ifdef CONFIG_OPLUS_FEATURE_PANIC_FLUSH
-/*jason.tang@TECH.BSP.Kernel.Storage, 2019-05-20, add control ext4 fsync*/
-{
-		.procname	= "ext4_fsync_enable",
-		.data		= &sysctl_ext4_fsync_enable,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0666,
-		.proc_handler	= proc_dointvec,
-},
-#endif
-#ifdef CONFIG_OPLUS_FEATURE_PANIC_FLUSH
-/*jason.tang@TECH.BSP.Kernel.Storage, 2019-05-20, add to count flush*/
-{
-		.procname	= "blkdev_issue_flush_count",
-		.data		= &sysctl_blkdev_issue_flush_count,
-		.maxlen		= sizeof(unsigned long),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
-},
-#endif
-#ifdef CONFIG_SCHED_DEBUG
-	{
-		.procname	= "sched_min_granularity_ns",
-		.data		= &sysctl_sched_min_granularity,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= sched_proc_update_handler,
-		.extra1		= &min_sched_granularity_ns,
-		.extra2		= &max_sched_granularity_ns,
-	},
 	{
 		.procname	= "sched_latency_ns",
 		.data		= &sysctl_sched_latency,
@@ -557,20 +505,6 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= sched_proc_update_handler,
 		.extra1		= &min_sched_granularity_ns,
 		.extra2		= &max_sched_granularity_ns,
-	},
-	{
-		.procname	= "sched_sync_hint_enable",
-		.data		= &sysctl_sched_sync_hint_enable,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
-	},
-	{
-		.procname	= "sched_cstate_aware",
-		.data		= &sysctl_sched_cstate_aware,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec,
 	},
 	{
 		.procname	= "sched_wakeup_granularity_ns",
@@ -598,6 +532,32 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+#endif
+#ifdef CONFIG_SCHED_DEBUG
+	{
+		.procname	= "sched_min_granularity_ns",
+		.data		= &sysctl_sched_min_granularity,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_proc_update_handler,
+		.extra1		= &min_sched_granularity_ns,
+		.extra2		= &max_sched_granularity_ns,
+	},
+	{
+		.procname	= "sched_sync_hint_enable",
+		.data		= &sysctl_sched_sync_hint_enable,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "sched_cstate_aware",
+		.data		= &sysctl_sched_cstate_aware,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+#ifdef CONFIG_SMP
 	{
 		.procname	= "sched_nr_migrate",
 		.data		= &sysctl_sched_nr_migrate,
