@@ -368,6 +368,17 @@ int sched_frame_rate_handler(struct ctl_table *table, int write, void __user *bu
 #endif /* OPLUS_FEATURE_UIFIRST */
 
 static struct ctl_table kern_table[] = {
+#if 0
+	{
+		.procname	= "sched_boost",
+		.data		= &sysctl_sched_boost,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_boost_handler,
+		.extra1		= &neg_three,
+		.extra2		= &three,
+	},
+#endif
 	{
 		.procname	= "sched_child_runs_first",
 		.data		= &sysctl_sched_child_runs_first,
@@ -418,15 +429,6 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= walt_proc_update_handler,
 		.extra1		= &zero,
 		.extra2		= &sysctl_sched_group_upmigrate_pct,
-	},
-	{
-		.procname	= "sched_boost",
-		.data		= &sysctl_sched_boost,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= sched_boost_handler,
-		.extra1		= &neg_three,
-		.extra2		= &three,
 	},
 	{
 		.procname	= "sched_conservative_pl",
