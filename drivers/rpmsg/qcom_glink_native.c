@@ -2059,7 +2059,7 @@ struct qcom_glink *qcom_glink_native_probe(struct device *dev,
 			       qcom_glink_native_intr,
 			       irqflags,
 			       "glink-native", glink);
-#else
+
 		if(glink_native_irq_index < GLINK_NATIVE_IRQ_NUM_MAX){
 			snprintf(glink_native_irq_names[glink_native_irq_index], GLINK_NATIVE_IRQ_NAME_LEN, "glink-native-%s", glink->name);
 			glink_native_irq_name = glink_native_irq_names[glink_native_irq_index];
@@ -2070,7 +2070,7 @@ struct qcom_glink *qcom_glink_native_probe(struct device *dev,
 					   IRQF_NO_SUSPEND | IRQF_SHARED,
 					   glink_native_irq_name, glink);
 		pr_err("qcom_glink_native_probe: def:%s final:%s index:%d irq:%d\n", glink_native_irq_names[0], glink_native_irq_name, glink_native_irq_index,irq);
-#endif/*VENDOR_EDIT*/
+
 
 	if (ret) {
 		dev_err(dev, "failed to request IRQ\n");
