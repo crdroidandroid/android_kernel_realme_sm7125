@@ -1871,7 +1871,7 @@ int aw882xx_i2c_probe(struct i2c_client *i2c,
 	struct snd_soc_dai_driver *dai = NULL;
 	struct aw882xx *aw882xx = NULL;
 	struct device_node *np = i2c->dev.of_node;
-	struct aw882xx_chan_info *chan_info = NULL;
+	struct aw882xx_chan_info *chan_info;
 	const char *aw882xx_rst = "aw882xx_rst";
 	const char *aw882xx_int = "aw882xx_int";
 	const char *aw882xx_irq_name = "aw882xx";
@@ -1945,7 +1945,6 @@ int aw882xx_i2c_probe(struct i2c_client *i2c,
 	}
 
 	/* aw882xx device name */
-	/*
 	if (np) {
 		if (chan_info->name_suffix)
 			dev_set_name(&i2c->dev, "%s_%s", "aw882xx_smartpa",
@@ -1956,7 +1955,7 @@ int aw882xx_i2c_probe(struct i2c_client *i2c,
 		aw_dev_err(&i2c->dev, "%s failed to set device name: %d\n",
 			__func__, ret);
 	}
-    */
+
 	/* register codec */
 	dai = devm_kzalloc(&i2c->dev, sizeof(aw882xx_dai), GFP_KERNEL);
 	if (!dai)
