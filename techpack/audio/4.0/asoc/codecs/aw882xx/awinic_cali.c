@@ -735,7 +735,7 @@ ssize_t aw_cali_range_read(struct file *file,
 		return -ENOSPC;
 	}
 
-	ret = snprintf(local_buf, PAGE_SIZE,
+	ret = snprintf(local_buf, sizeof(local_buf),
 		" Min:%d mOhms, Max:%d mOhms\n", R0_MIN, R0_MAX);
 
 	ret = simple_read_from_buffer(buf, len, ppos, local_buf, ret);
