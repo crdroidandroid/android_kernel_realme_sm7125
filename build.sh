@@ -1,21 +1,61 @@
 #!/bin/bash
 
+# ============================================================
+# Pre-build checks for required toolchains and AnyKernel3
+# ============================================================
+
+# Paths
+CLANG_DIR=~/toolchains/clang
+GCC_DIR=~/toolchains/gcc-aarch64-linux-gnu-9.3
+ANYKERNEL_DIR=~/AnyKernel3
+
+# Check Clang
+if [ ! -d "$CLANG_DIR" ]; then
+  echo -e "\n🔍 \033[1;33mClang toolchain not found. Cloning...\033[0m"
+  git clone --depth=1 --branch lineage-20.0 \
+    https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git "$CLANG_DIR"
+else
+  echo -e "\n✅ \033[1;32mClang toolchain already present.\033[0m"
+fi
+
+# Check GCC
+if [ ! -d "$GCC_DIR" ]; then
+  echo -e "\n🔍 \033[1;33mGCC toolchain not found. Cloning...\033[0m"
+  git clone --depth=1 --branch lineage-23.0 \
+    https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-gnu-9.3.git "$GCC_DIR"
+else
+  echo -e "\n✅ \033[1;32mGCC toolchain already present.\033[0m"
+fi
+
+# Check AnyKernel3
+if [ ! -d "$ANYKERNEL_DIR" ]; then
+  echo -e "\n🔍 \033[1;33mAnyKernel3 not found. Cloning...\033[0m"
+  git clone --depth=1 https://github.com/theshaenix/AnyKernel3.git "$ANYKERNEL_DIR"
+else
+  echo -e "\n✅ \033[1;32mAnyKernel3 folder already present.\033[0m"
+fi
+
+# ============================================================
+# Build Script
+# ============================================================
+
 # Kernel build configuration
 KERNEL_NAME="ShadowBladeX"
-DEVICE="reatoll"
+DEVICE="RMX2061"
 VARIANT="perf"
 BUILD_TYPE="Stable"
-VERSION_NUMBER="v1.0.2"
+VERSION_NUMBER="v1.0.3"
 
 DATE=$(date +%Y%m%d)
-BASE_ZIPNAME="${KERNEL_NAME}-${VARIANT}-${DEVICE}-${BUILD_TYPE}-${DATE}-${VERSION_NUMBER}"
+TIME=$(date +%H%M)
+BASE_ZIPNAME="${KERNEL_NAME}-${VARIANT}-${DEVICE}-${BUILD_TYPE}-${TIME}-${DATE}-${VERSION_NUMBER}"
 ZIPNAME="${BASE_ZIPNAME}.zip"
 
 # Paths
 export KERNEL_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export CLANG_PATH=~/tools/proton-clang
-export GCC_PATH=~/tools/gcc-aarch64-linux-gnu-9.3
-export ANYKERNEL_DIR=~/tools/AnyKernel3
+export CLANG_PATH=$CLANG_DIR
+export GCC_PATH=$GCC_DIR
+export ANYKERNEL_DIR=$ANYKERNEL_DIR
 export OUT_DIR=out
 
 export PATH=$CLANG_PATH/bin:$GCC_PATH/bin:$PATH
@@ -27,6 +67,10 @@ export CROSS_COMPILE=aarch64-linux-
 
 echo -e "\n🛠️  \033[1;34mStarting Kernel Build: $BASE_ZIPNAME\033[0m"
 
+echo -e "\n🧹 \033[1;33mCleaning output and ccache...\033[0m"
+rm -rf $OUT_DIR/*
+rm -f "$ANYKERNEL_DIR/zImage"
+ccache -C > /dev/null 2>&1
 
 echo -e "\n🔧 \033[1;36mCompiler Info:\033[0m"
 clang --version | head -n 1
@@ -86,3 +130,4 @@ else
   echo -e "\n❌ \033[1;31mFailed to create zip.\033[0m"
   exit 1
 fi
+
