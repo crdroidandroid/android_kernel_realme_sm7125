@@ -374,7 +374,7 @@ static int dump_tasks_info(bool verbose)
 
 		/* consolidate page table accounting */
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0))
-		tsk_nr_ptes = PTRS_PER_PTE * sizeof(pte_t) * atomic_long_read(&tsk->mm->nr_ptes);
+		tsk_nr_ptes = atomic_long_read(&tsk->mm->pgtables_bytes);
 #else
 		tsk_nr_ptes = mm_pgtables_bytes(tsk->mm);
 #endif
